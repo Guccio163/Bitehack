@@ -25,3 +25,4 @@ dist-ssr
 
 # project dependencies
 node_modules
+.env

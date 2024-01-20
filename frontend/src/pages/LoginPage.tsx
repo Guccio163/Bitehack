@@ -13,10 +13,13 @@ export default function LoginPage() {
     const model = { username: loginUsername, password: loginPassword };
     await axios.post(url, model).then((response) => {
       const data = response.data;
-      setUserID(data("token"));
-      setUsername(data("username"));
-      setFirstName(data("first_name"));
-      setLastName(data("last_name"));
+      setUserID(data["token"]);
+      setUsername(data["username"]);
+      setFirstName(data["first_name"]);
+      setLastName(data["last_name"]);
+
+      console.log(data);
+      
     });
   };
 

@@ -95,9 +95,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'marekzu2',
-        'USER': 'marekzu2',
-        'PASSWORD': 't3mYtEEP9pZa3uzq',
+        'NAME': 'marekzuw',
+        'USER': 'marekzuw',
+        'PASSWORD': 'SejiYKWXmXhNhZGW',
         'HOST': 'mysql.agh.edu.pl',
         'PORT': '3306',
     }

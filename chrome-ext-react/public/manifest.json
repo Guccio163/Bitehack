@@ -1,0 +1,34 @@
+{
+  "short_name": "IHelp",
+  "name": "IHelp Internet addiction",
+  "icons": {
+    "16": "ihelp-high-resolution-logo-transparent.png"
+  },
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Open the popup",
+    "default_icon": "ihelp-high-resolution-logo-transparent.png"
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "./static/js/content.js"
+      ]
+    }
+  ]
+}

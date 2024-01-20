@@ -10,3 +10,9 @@ export type DOMMessageResponse = {
     time:string;
     code:number;
 }
+
+export type APIData = {
+    site_url:string;
+    start_date:Date;
+    end_date:Date;
+}

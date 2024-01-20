@@ -69,10 +69,12 @@ class SiteVisitsView(APIView):
         
         data = request.data
         data['user'] = user.id
+        print("Z requesta: ", data)
         serializer = SiteVisitSerializer(instance=SiteVisit(), data=data)
         
         if serializer.is_valid():
             serializer.save()
+            print("Do bazy danych ", serializer.data)
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

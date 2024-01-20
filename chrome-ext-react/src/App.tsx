@@ -7,16 +7,7 @@ function App() {
   const [headlines, setHeadlines] = React.useState<string[]>([]);
   const [titles, setTitles] = React.useState<string[]>([]);
 
-  const sendInfo = (message:DOMMessage, callback:(response:DOMMessageResponse) => void):void => {
-    chrome.tabs && chrome.tabs.query({
-      active: true,
-      currentWindow: true
-    }, tabs => {
-      chrome.tabs.sendMessage(
-        tabs[0].id || 0,
-        message, callback)
-    });
-  }
+
 
   React.useEffect(() => {
     /**
@@ -54,33 +45,7 @@ function App() {
     });
   }, []);
 
-  chrome.tabs.onRemoved.addListener(() => {
-    console.log("tab closed")
-    sendInfo({greeting:"tab-closed"}, (res) => {
-      console.log(res)
-    })
-  })
 
-  chrome.tabs.onCreated.addListener(() => {
-    console.log("Tab created")
-    sendInfo({greeting:"tab-created"}, (res) => {
-      console.log(res)
-    })
-  })
-
-  chrome.tabs.onUpdated.addListener(() => {
-    console.log("Tab updated")
-    sendInfo({greeting:"tab-updated"}, (res) => {
-      console.log(res)
-    })
-  })
-
-  chrome.tabs.onActivated.addListener(() => {
-    console.log("Tab activated")
-    sendInfo({greeting:"tab-activated"}, (res) => {
-      console.log(res)
-    })
-  })
 
   return (
     <div className="App">

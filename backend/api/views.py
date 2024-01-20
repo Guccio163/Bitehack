@@ -69,10 +69,7 @@ class SiteVisitsView(ListAPIView):
         visits_aggregated = {}
         for visit in visits_filtered:
             key = visit.site_name()
-            if key in visits_aggregated:
-                visits_aggregated[key] += visit.duration()
-            else:
-                visits_aggregated[key] = timedelta(0)
+            visits_aggregated[key] = visits_aggregated.get(key, visit.duration())
         return {key: str(value) for key, value in visits_aggregated}
 
 

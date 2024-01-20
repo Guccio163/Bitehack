@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 
-from .models import User
+from .models import User, SiteVisit
 from django.contrib.auth import authenticate
 
 
@@ -69,3 +69,9 @@ class AuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+
+class SiteVisitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteVisit
+        fields = '__all__'

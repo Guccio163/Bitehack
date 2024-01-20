@@ -3,6 +3,8 @@ from rest_framework.authtoken.models import Token
 
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 
+from urllib.parse import urlparse
+
 # @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 # def create_auth_token(sender, instance=None, created=False, **kwargs):
 #     if created:
@@ -75,3 +77,23 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
+
+
+# Create your models here.
+class SiteVisit(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    site_url = models.URLField(max_length=255)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+
+    def duration(self):
+        return self.end_date - self.start_date
+
+    # ?
+    def site_name(self):
+        return urlparse(self.site_url).netloc.split('.')[1]
+
+
+class BlockedSite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    site_url = models.URLField(max_length=255)

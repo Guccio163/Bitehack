@@ -27,6 +27,18 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:5173',
+    'http://localhost:5173'
+]
+AUTH_USER_MODEL = 'api.User'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication', 
+    ],
+}
 
 # Application definition
 INSTALLED_APPS = [
@@ -39,6 +51,9 @@ INSTALLED_APPS = [
 
     'api',
     'rest_framework',
+    'rest_framework.authtoken',
+
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +64,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -78,9 +95,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'marekzu1',
-        'USER': 'marekzu1',
-        'PASSWORD': '4QD5Aqb6rp3nsqmz',
+        'NAME': 'marekzuw',
+        'USER': 'marekzuw',
+        'PASSWORD': 'SejiYKWXmXhNhZGW',
         'HOST': 'mysql.agh.edu.pl',
         'PORT': '3306',
     }

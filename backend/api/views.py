@@ -70,7 +70,7 @@ class SiteVisitsView(ListAPIView):
         for visit in visits_filtered:
             key = visit.site_name()
             visits_aggregated[key] = visits_aggregated.get(key, visit.duration())
-        return {key: str(value) for key, value in visits_aggregated}
+        return {key: value for key, value in visits_aggregated}
 
 
 class BlockSiteView(APIView):

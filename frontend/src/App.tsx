@@ -1,17 +1,11 @@
 import "./App.css";
 import React from "react";
-import UserDataContext from "./contexts/UserDataContext";
-import MainPage from "./pages/MainPage";
-import AddictionsContext from "./contexts/AddictionsContext";
 
+import MainPage from "./pages/MainPage";
 function App() {
 
   return (
-    <UserDataContext>
-      <AddictionsContext>
         <MainPage />
-      </AddictionsContext>
-    </UserDataContext>
   );
 }
 

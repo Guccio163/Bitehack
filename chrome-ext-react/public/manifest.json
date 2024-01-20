@@ -20,6 +20,9 @@
     "http://*/*",
     "https://*/*"
   ],
+  "background": {
+    "service_worker": "./static/js/background.js"
+  },
   "content_scripts": [
     {
       "matches": [
@@ -28,7 +31,8 @@
       ],
       "js": [
         "./static/js/content.js"
-      ]
+      ],
+      "run_at": "document_start"
     }
   ]
 }

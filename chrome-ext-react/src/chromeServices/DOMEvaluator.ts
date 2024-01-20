@@ -1,5 +1,8 @@
 import { DOMMessage, DOMMessageResponse } from '../types';
 
+// tHIS NEEDS TO BE DELETED IN THE FUTURE!!!
+
+
 // Function called when a new message is received
 const messagesFromReactAppListener = (
     msg: DOMMessage,
@@ -24,6 +27,7 @@ const messagesFromReactAppListener = (
         time: new Date().toISOString(),
         code: -1, // to be set
     };
+    console.log("PLEASE DO NOT USE ME IM NOT REQUIRED")
     switch (msg.greeting) {
         case "hi":
             console.log("Hi")
@@ -55,6 +59,8 @@ const messagesFromReactAppListener = (
     // chrome.storage.local.set({ domain: res }).then(() => {
     //     console.log("Storage updated", domain)
     // })
+    console.log(res)
+    
     sendResponse(res);
     // console.log("Generated:", msg, sender)
 

@@ -97,3 +97,4 @@ class SiteVisit(models.Model):
 class BlockedSite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     site_url = models.URLField(max_length=255)
+    daily_usage = models.IntegerField(default=0)

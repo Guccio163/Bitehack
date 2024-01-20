@@ -1,15 +1,15 @@
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from .models import User, SiteVisit
+from .models import User, SiteVisit, BlockedSite
 from .serializers import RegisterSerializer, AuthTokenSerializer
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView,
 from rest_framework.views import APIView
-from .serializers import SiteVisitSerializer
+from .serializers import SiteVisitSerializer, BlockedSiteSerializer
 
 from datetime import datetime, timedelta
 
@@ -39,13 +39,13 @@ class CustomAuthToken(ObtainAuthToken, generics.CreateAPIView):
         })
 
 
-class RegisterView(generics.CreateAPIView):
+class RegisterView(CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
 
-class SiteVisits(ListAPIView):
+class SiteVisitsView(ListAPIView):
     serializer_class = SiteVisitSerializer
 
     def get_queryset(self):
@@ -74,3 +74,35 @@ class SiteVisits(ListAPIView):
             else:
                 visits_aggregated[key] = timedelta(0)
         return {key: str(value) for key, value in visits_aggregated}
+
+
+class BlockSiteView(APIView):
+    def get(self, request, format=None):
+        blocked_sites = BlockedSite.objects.all()
+        serializer = BlockedSiteSerializer(blocked_sites, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        data = request.data
+        serializer = BlockedSiteSerializer(instance=BlockedSite, data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk, format=None):
+        blocked_site = BlockedSite.objects.get(pk=pk)
+        serializer = BlockedSiteSerializer(blocked_site, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        blocked_site = BlockedSite.objects.get(pk=pk)
+        blocked_site.delete()
+        return Response("Blocked site deleted")

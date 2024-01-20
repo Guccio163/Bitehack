@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { userDataContext } from "../contexts/UserDataContext";
+import LoginPage from "./LoginPage"
 
 export default function ProfilePage() {
   const { username, firstName, lastName } = useContext(userDataContext);
@@ -9,6 +10,7 @@ export default function ProfilePage() {
       <label>
         {username}, {firstName}, {lastName}
       </label>
+      <LoginPage></LoginPage>
     </>
   );
 }

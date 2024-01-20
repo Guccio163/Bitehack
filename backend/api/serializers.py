@@ -81,3 +81,16 @@ class BlockedSiteSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlockedSite
         fields = '__all__'
+
+    
+    def create(self, validated_data, user):
+        
+        blocked_site = BlockedSite.objects.create(
+            user = user
+            site_url = validated_data['site_url']
+            daily_usage = validated_data['daily_usage']
+        )
+
+        blocked_site.save()
+
+        return user

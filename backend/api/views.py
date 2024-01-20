@@ -47,14 +47,18 @@ class RegisterView(CreateAPIView):
 
 class SiteVisitsView(ListAPIView):
     serializer_class = SiteVisitSerializer
+    # permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
+        _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
+        user = Token.objects.get(key=key).user
+
         start_param = self.request.query_params.get('start')
         end_param = self.request.query_params.get('end')
         start_date = datetime.strptime(start_param, '%Y-%m-%d %H:%M:%S') if start_param else None
         end_date = datetime.strptime(end_param, '%Y-%m-%d %H:%M:%S') if end_param else None
 
-        visits = SiteVisit.objects.all()
+        visits = SiteVisit.objects.filter(user=user)
 
         visits_aggregated = self._aggregate_visits(visits, start_date, end_date)
 
@@ -74,14 +78,22 @@ class SiteVisitsView(ListAPIView):
 
 
 class BlockSiteView(APIView):
+    # permission_classes = (IsAuthenticated,)
+
     def get(self, request, format=None):
-        blocked_sites = BlockedSite.objects.all()
+        _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
+        user = Token.objects.get(key=key).user
+
+        blocked_sites = BlockedSite.objects.filter(user=user)
         serializer = BlockedSiteSerializer(blocked_sites, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
+        _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
+        user = Token.objects.get(key=key).user
+        
         data = request.data
-        serializer = BlockedSiteSerializer(instance=BlockedSite, data=data)
+        serializer = BlockedSiteSerializer(instance=BlockedSite, data=data, user=user)
 
         if serializer.is_valid():
             serializer.save()

@@ -93,12 +93,15 @@ class BlockSiteView(APIView):
         user = Token.objects.get(key=key).user
         
         data = request.data
-        serializer = BlockedSiteSerializer(instance=BlockedSite, data=data, user=user)
-
+        data['user'] = user.id
+        print("no nieźle", data)
+        serializer = BlockedSiteSerializer(instance=BlockedSite(), data=data)
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
 
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):

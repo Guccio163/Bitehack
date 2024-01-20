@@ -12,14 +12,6 @@ from rest_framework.views import APIView
 from .serializers import SiteVisitSerializer, BlockedSiteSerializer
 
 from datetime import datetime, timedelta
-import pytz
-
-utc=pytz.UTC
-
-# Create your views here.
-@api_view()
-def test(request):
-    return Response("No siemka")
 
 
 class CustomAuthToken(ObtainAuthToken, generics.CreateAPIView):
@@ -87,13 +79,10 @@ class SiteVisitsView(APIView):
         visits_aggregated = {}
         for visit in visits_filtered:
             key = visit['site_url']
-            visits_aggregated[key] = visits_aggregated.get(key, visit["end_date"] - visit["start_date"])
+            visits_aggregated[key] = visits_aggregated.get(key, 0) + visit["end_date"] - visit["start_date"]
     
         return visits_aggregated
-    
-    def _duration(self, visit):
-        print(visit)
-        return visit["end_date"] - visit["start_date"]
+
 
 
 class BlockSiteView(APIView):
@@ -142,6 +131,32 @@ class BlockSiteView(APIView):
 
         return Response("Blocked site deleted")
 
+class LimitationView(APIView):
+     def get(self, request, format=None):
+        _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
+        user = Token.objects.get(key=key).user
+
+        blocked_sites = BlockedSite.objects.filter(user=user)
+        blocked_sites_urls = [b.site_url for b in blocked_sites]
+
+        today_date = datetime.now().date()
+        visits = SiteVisit.objects.filter(site_url__in=blocked_sites_urls, 
+                                          start_date__year=today_date.year,
+                                          start_date__month=today_date.month,
+                                          start_date__day=today_date.day).values()
+        
+        blocked_sites_urls_counts = {b.site_url: {"daily_usage": b.daily_usage, "time": timedelta(0), "count": 0} for b in blocked_sites}
+        return Response(self._aggregate_visits(visits, blocked_sites_urls_counts))
+     
+     def _aggregate_visits(self, visits, blocked_sites_urls_counts):
+        visits_aggregated = blocked_sites_urls_counts
+        
+        for visit in visits:
+            key = visit['site_url']
+            visits_aggregated[key]["time"] += visit["end_date"] - visit["start_date"]
+            visits_aggregated[key]["count"] += 1
+
+        return visits_aggregated
 
 # const testApi = async () => {
 #     let x = new Date()

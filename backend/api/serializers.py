@@ -107,5 +107,6 @@ class BlockedSiteSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data): 
         instance.daily_usage = validated_data.get('daily_usage', instance.daily_usage)
+        instance.blocked_count = validated_data.get('blocked_count', instance.blocked_count)
         instance.save()
         return instance

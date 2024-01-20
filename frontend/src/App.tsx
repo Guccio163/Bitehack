@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+// import reactLogo from "./assets/react.svg"
+// import viteLogo from "../public/vite.svg"
 import "./App.css";
-import { initializeApp } from "firebase/app";
 import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "./firebase";
 import React from "react";
@@ -17,15 +16,19 @@ function App() {
     });
   };
 
+  // const vl = require("public/vite.svg") as string;
+  // const rl = require("./assets/react.svg") as string;
+
+
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
+        {/* <a href="https://vitejs.dev" target="_blank">
+          <img src={require(viteLogo)} className="logo" alt="Vite logo" />
         </a>
         <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        </a> */}
       </div>
       <h1>Vite + React</h1>
       <div className="card">

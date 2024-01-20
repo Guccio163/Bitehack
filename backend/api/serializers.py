@@ -76,6 +76,17 @@ class SiteVisitSerializer(serializers.ModelSerializer):
         model = SiteVisit
         fields = '__all__'
 
+    def create(self, validated_data, user):
+        site = SiteVisit.objects.create(
+            user = user,
+            site_url = validated_data['site_url'],
+            start_date = validated_data['start_date'],
+            end_date = validated_data['end_date']
+        )
+
+        site.save()
+
+        return user
 
 class BlockedSiteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -84,7 +95,6 @@ class BlockedSiteSerializer(serializers.ModelSerializer):
 
     
     def create(self, validated_data, user):
-        
         blocked_site = BlockedSite.objects.create(
             user = user,
             site_url = validated_data['site_url'],
@@ -94,3 +104,8 @@ class BlockedSiteSerializer(serializers.ModelSerializer):
         blocked_site.save()
 
         return user
+    
+    def update(self, instance, validated_data): 
+        instance.daily_usage = validated_data.get('daily_usage', instance.daily_usage)
+        instance.save()
+        return instance

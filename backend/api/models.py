@@ -1,3 +1,4 @@
+from django.db.models import DateTimeField
 from django.db import models
 from rest_framework.authtoken.models import Token
 
@@ -78,13 +79,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return True
 
-
+class DateTimeWithoutTZField(DateTimeField):
+    def db_type(self, connection):
+        return 'timestamp'
+    
 # Create your models here.
 class SiteVisit(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     site_url = models.URLField(max_length=255)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = DateTimeWithoutTZField()
+    end_date = DateTimeWithoutTZField()
 
     def duration(self):
         return self.end_date - self.start_date

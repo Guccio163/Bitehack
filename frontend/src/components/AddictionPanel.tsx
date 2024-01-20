@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Addiction } from "../contexts/AddictionsContext";
+import axios from 'axios'
 
 interface Props {
   addiciton: Addiction;

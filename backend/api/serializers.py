@@ -86,9 +86,9 @@ class BlockedSiteSerializer(serializers.ModelSerializer):
     def create(self, validated_data, user):
         
         blocked_site = BlockedSite.objects.create(
-            user = user
-            site_url = validated_data['site_url']
-            daily_usage = validated_data['daily_usage']
+            user = user,
+            site_url = validated_data['site_url'],
+            daily_usage = validated_data['daily_usage'],
         )
 
         blocked_site.save()

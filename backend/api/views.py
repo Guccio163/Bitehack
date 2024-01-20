@@ -7,7 +7,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView, CreateAPIView,
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.views import APIView
 from .serializers import SiteVisitSerializer, BlockedSiteSerializer
 

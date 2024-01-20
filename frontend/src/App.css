@@ -92,3 +92,26 @@
         top: -30%;
     }
 }
+
+.block-site-form {
+  position: absolute;
+  left: calc(50% - 200px);
+  top: -400px;
+  width: 400px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: top 0.5s ease;
+  z-index: 3;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+  border-radius: 7%;
+}
+
+.block-site-form-active {
+  top: calc(50% - 200px);
+}

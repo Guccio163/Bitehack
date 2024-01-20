@@ -4,15 +4,16 @@ from rest_framework.response import Response
 from .models import User
 from .serializers import RegisterSerializer, AuthTokenSerializer
 from rest_framework import generics
-from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from rest_framework.decorators import api_view
+
 
 # Create your views here.
 @api_view()
 def test(request):
     return Response("No siemka")
+
 
 class CustomAuthToken(ObtainAuthToken, generics.CreateAPIView):
     permission_classes = (AllowAny,)
@@ -20,7 +21,7 @@ class CustomAuthToken(ObtainAuthToken, generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
-                                       context={'request': request})
+                                           context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
@@ -31,6 +32,7 @@ class CustomAuthToken(ObtainAuthToken, generics.CreateAPIView):
             'first_name': user.first_name,
             'last_name': user.last_name,
         })
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()

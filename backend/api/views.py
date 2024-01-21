@@ -41,6 +41,7 @@ class RegisterView(CreateAPIView):
 
 class SiteVisitsView(APIView):
     serializer_class = SiteVisitSerializer
+
     # permission_classes = (IsAuthenticated,)
     def get(self, request, format=None):
         _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
@@ -50,20 +51,20 @@ class SiteVisitsView(APIView):
 
         start_date = datetime.fromisoformat(start_param)
         end_date = datetime.fromisoformat(end_param)
-        
+
         visits = SiteVisit.objects.filter(user=user).values()
 
         return Response(self._aggregate_visits(visits, start_date, end_date))
-    
+
     def post(self, request, format=None):
         _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
         user = Token.objects.get(key=key).user
-        
+
         data = request.data
         data['user'] = user.id
         print("Z requesta: ", data)
         serializer = SiteVisitSerializer(instance=SiteVisit(), data=data)
-        
+
         if serializer.is_valid():
             serializer.save()
             print("Do bazy danych ", serializer.data)
@@ -75,20 +76,20 @@ class SiteVisitsView(APIView):
     # Considers only site visits made between start_date and end_date
     def _aggregate_visits(self, visits, start_date, end_date):
         visits_filtered = [v for v in visits
-                if (start_date is None or v['start_date'] >= start_date) and (end_date is None or v["end_date"] <= end_date)]
-
+                           if (start_date is None or v['start_date'] >= start_date) and (
+                                       end_date is None or v["end_date"] <= end_date)]
 
         visits_aggregated = {}
         for visit in visits_filtered:
             key = visit['site_url']
             visits_aggregated[key] = visits_aggregated.get(key, 0) + visit["end_date"] - visit["start_date"]
-    
-        return visits_aggregated
 
+        return visits_aggregated
 
 
 class BlockSiteView(APIView):
     serializer_class = BlockedSiteSerializer
+
     # permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
@@ -102,28 +103,28 @@ class BlockSiteView(APIView):
     def post(self, request, format=None):
         _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
         user = Token.objects.get(key=key).user
-        
+
         data = request.data
         data['user'] = user.id
-        
-        serializer = BlockedSiteSerializer(data=data, context={'request': request}) 
-        
+
+        serializer = BlockedSiteSerializer(data=data, context={'request': request})
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        
+
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
         _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
         user = Token.objects.get(key=key).user
-        
+
         data = request.data
         data['user'] = user.id
         blocked_site = BlockedSite.objects.get(pk=pk)
         serializer = BlockedSiteSerializer(blocked_site, data=data, partial=True)
-        
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -136,8 +137,9 @@ class BlockSiteView(APIView):
 
         return Response("Blocked site deleted")
 
+
 class LimitationView(APIView):
-     def get(self, request, format=None):
+    def get(self, request, format=None):
         _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
         user = Token.objects.get(key=key).user
 
@@ -145,17 +147,18 @@ class LimitationView(APIView):
         blocked_sites_urls = [b.site_url for b in blocked_sites]
 
         today_date = datetime.now().date()
-        visits = SiteVisit.objects.filter(site_url__in=blocked_sites_urls, 
+        visits = SiteVisit.objects.filter(site_url__in=blocked_sites_urls,
                                           start_date__year=today_date.year,
                                           start_date__month=today_date.month,
                                           start_date__day=today_date.day).values()
-        
-        blocked_sites_urls_counts = {b.site_url: {"daily_usage": b.daily_usage, "time": timedelta(0), "count": 0} for b in blocked_sites}
+
+        blocked_sites_urls_counts = {b.site_url: {"daily_usage": b.daily_usage, "time": timedelta(0), "count": 0} for b
+                                     in blocked_sites}
         return Response(self._aggregate_visits(visits, blocked_sites_urls_counts))
-     
-     def _aggregate_visits(self, visits, blocked_sites_urls_counts):
+
+    def _aggregate_visits(self, visits, blocked_sites_urls_counts):
         visits_aggregated = blocked_sites_urls_counts
-        
+
         for visit in visits:
             key = visit['site_url']
             visits_aggregated[key]["time"] += visit["end_date"] - visit["start_date"]
@@ -176,12 +179,12 @@ class LimitationView(APIView):
 #     //     .then(response => {
 #     //       const data = response.data
 #     //       console.log(data);
-          
+
 #     //     })
 #     //     .catch(error => {
 #     //         console.log(error);
 #     //     })
-    
+
 #     await axios
 #       .get(url, { params:
 #       {

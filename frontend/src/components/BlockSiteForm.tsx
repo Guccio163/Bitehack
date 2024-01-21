@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from 'axios'
 
+import CloseIcon from '@mui/icons-material/Close';
+
 interface Props{
     userId:string,
     state:boolean,
@@ -20,22 +22,21 @@ export default function BlockSiteForm({userId, state, onHideForm} : Props) {
         if (urlInput != '') {
             try {
                 const jsonData = {
-                    "user": userId,
                     "site_url": urlInput,
                     "daily_usage": 0
                 };
-        
-                //onHideForm();
-                //const response = await axios.post('/blocksite/', jsonData);
+    
+                const response = await axios.post('/blocksite/', jsonData);
+                onHideForm();
             } catch (error) {
                 console.error('Error in blocked site post:', error);
             }
         }
-        onHideForm();
     }
 
     return (
         <div className={`block-site-form ${state ? 'block-site-form-active' : ''}`}>
+            <CloseIcon style={{position:"absolute", top: "1em", right:"1em", cursor:"pointer"}} onClick={onHideForm}/>
             <h2 style={{fontSize:"2em", fontWeight:"bold", padding:"0 0 2.2em 0", margin:"0"}}>Zablokuj stronę</h2>
             <form onSubmit={handleOnSubmit}>
                 <div style={{width: "100%", display:"flex", alignItems:"center"}}>
@@ -45,7 +46,8 @@ export default function BlockSiteForm({userId, state, onHideForm} : Props) {
                 </div>
                 <input type="submit" value="submit" style={{
                     margin: "30px 0 0 0",
-                    fontSize:"1.3em",
+                    fontSize:"1.2em",
+                    padding:"0.3em 0.5em"
                 }}/>
             </form>
         </div>

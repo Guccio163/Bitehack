@@ -30,6 +30,7 @@ class CustomAuthToken(ObtainAuthToken, generics.CreateAPIView):
             'username': user.username,
             'first_name': user.first_name,
             'last_name': user.last_name,
+            'date_joined': user.date_joined
         })
 
 
@@ -52,8 +53,8 @@ class SiteVisitsView(APIView):
         start_date = datetime.fromisoformat(start_param)
         end_date = datetime.fromisoformat(end_param)
 
-        visits = SiteVisit.objects.filter(user=user).values()
-
+        visits = SiteVisit.objects.filter(user=user, start_date__gte=start_date, end_date__lte=end_date).values()
+        
         return Response(self._aggregate_visits(visits, start_date, end_date))
 
     def post(self, request, format=None):
@@ -62,29 +63,34 @@ class SiteVisitsView(APIView):
 
         data = request.data
         data['user'] = user.id
-        print("Z requesta: ", data)
+        
         serializer = SiteVisitSerializer(instance=SiteVisit(), data=data)
 
         if serializer.is_valid():
             serializer.save()
-            print("Do bazy danych ", serializer.data)
+        
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Returns a dictionary where (key, value) = (site_name, aggregated_time_spent)
     # Considers only site visits made between start_date and end_date
-    def _aggregate_visits(self, visits, start_date, end_date):
-        visits_filtered = [v for v in visits
+    def _aggregate_visits(self, visits, start_date, end_date):        
+        
+        visits_names = {v["site_url"] for v in visits
                            if (start_date is None or v['start_date'] >= start_date) and (
-                                       end_date is None or v["end_date"] <= end_date)]
+                                       end_date is None or v["end_date"] <= end_date)}
+        
+        result = []
+        
+        for k in visits_names:
+            result.append({"name": k, "time": timedelta(0), "count": 0})
+            for visit in visits:
+                if visit["site_url"] != k: continue
+                result[-1]["time"] += visit["end_date"] - visit["start_date"]
+                result[-1]["count"] += 1
 
-        visits_aggregated = {}
-        for visit in visits_filtered:
-            key = visit['site_url']
-            visits_aggregated[key] = visits_aggregated.get(key, 0) + visit["end_date"] - visit["start_date"]
-
-        return visits_aggregated
+        return result
 
 
 class BlockSiteView(APIView):
@@ -113,7 +119,6 @@ class BlockSiteView(APIView):
             serializer.save()
             return Response(serializer.data)
 
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
@@ -153,15 +158,15 @@ class LimitationView(APIView):
                                           start_date__day=today_date.day).values()
 
         
-        blocked_sites_urls_counts = [[b.site_url, b.daily_usage] for b in blocked_sites]
+        blocked_sites_urls_counts = [[b.site_url, b.daily_usage, b.date_joined, b.id] for b in blocked_sites]
         
         return Response(self._aggregate_visits(visits, blocked_sites_urls_counts))
 
     def _aggregate_visits(self, visits, blocked_sites_urls_counts):
         visits_aggregated = []
         
-        for blocked_url, daily_usage in blocked_sites_urls_counts:
-            visits_aggregated.append({"name": blocked_url, "data": {"daily_usage": daily_usage, "time": timedelta(0), "count": 0}})
+        for blocked_url, daily_usage, date_joined, id in blocked_sites_urls_counts:
+            visits_aggregated.append({"name": blocked_url, "data": {"daily_usage": daily_usage, "date_joined": date_joined, "time": timedelta(0), "count": 0, "pk": id}})
             for visit in visits:
                 if visit["site_url"] != blocked_url: continue
                 visits_aggregated[-1]["data"]["time"] += visit["end_date"] - visit["start_date"]
@@ -170,13 +175,13 @@ class LimitationView(APIView):
         return visits_aggregated
 
 # const testApi = async () => {
-#     let x = new Date()
-#     x = new Date(x.getTime() - 89 * 60 * 1000);
-#     const url = `/sites/`  
-#     const model = {
-#       site_url: "https://opera.com/",
-#       start_date: x,
-#       end_date: new Date()
+    # let x = new Date()
+    # x = new Date(x.getTime() - 89 * 60 * 1000);
+    # const url = `/sites/`  
+    # const model = {
+    #   site_url: "https://opera.com/",
+    #   start_date: x,
+    #   end_date: new Date()
 #     }
 #      await axios.post(url, model)
 #          .then(response => {

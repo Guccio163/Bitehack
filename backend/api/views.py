@@ -88,6 +88,7 @@ class SiteVisitsView(APIView):
 
 
 class BlockSiteView(APIView):
+    serializer_class = BlockedSiteSerializer
     # permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
@@ -104,12 +105,14 @@ class BlockSiteView(APIView):
         
         data = request.data
         data['user'] = user.id
-        serializer = BlockedSiteSerializer(instance=BlockedSite(), data=data)
+        
+        serializer = BlockedSiteSerializer(data=data, context={'request': request}) 
         
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-
+        
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):

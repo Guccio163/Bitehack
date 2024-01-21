@@ -10,8 +10,9 @@ const messagesFromReactAppListener = (
     switch (msg.message) {
         case "alert":
             alert("Your time has expired! Try to be a better version of yourself :)")
+            break;
     }
-    const res:DOMMessage = {
+    const res: DOMMessage = {
         message: "done"
     }
     sendResponse(res);

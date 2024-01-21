@@ -18,35 +18,36 @@ async function sendTime(givenDomain: string) {
         start_date: startTime,
         end_date: endTime
     }
-    // console.log("sendData: ", data)
+    console.log("sendData: ", data)
     await sendData(data)
     return
 }
 
-const verifyIfAllowed = (givenDomain: string) => {
+const verifyIfAllowed = async (givenDomain: string) => {
     // get restricted websites - Suboptimal, but it should work :)
-    getLimitedDomains().then((data: LimitationRecord[]) => {
-        limitedList = data
-        // Check if the hostname is in the restricted domains list
-        limitedList.forEach((el: LimitationRecord) => {
-            // console.log(el.name, givenDomain, el.name == givenDomain, el.data.daily_usage, el.data.time)
-            if (el.name == givenDomain && el.data.daily_usage <= el.data.time) {
+    const data = await getLimitedDomains();
+    limitedList = data;
+    // Check if the hostname is in the restricted domains list
+    limitedList.forEach((el: LimitationRecord) => {
+        // console.log(el.name, givenDomain, el.name == givenDomain, el.data.daily_usage, el.data.time);
+        if (el.name.includes(givenDomain) && el.data.daily_usage <= el.data.time) {
+            console.log("Showing alert and redirecting...")
             // if (el.name == givenDomain && el.data.daily_usage * 60 <= el.data.time) {
-                // alert the user
-                chrome.tabs && chrome.tabs.query({
-                    active: true,
-                    currentWindow: true
-                }, tabs => {
-                    chrome.tabs.sendMessage(
-                        tabs[0].id || 0,
-                        { message: "alert" } as DOMMessage,
-                        (response: DOMMessage) => {
-                            console.log(response)
-                        });
-                });
-            }
-        });
-    })
+            // alert the user
+            chrome.tabs && chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            }, tabs => {
+                chrome.tabs.sendMessage(
+                    tabs[0].id!,
+                    { message: "alert" } as DOMMessage,
+                    (res: DOMMessage) => {
+                        // console.log(res)
+                        chrome.tabs.update(activeTabId, { url: "https://www.google.com" });
+                    });
+            });
+        }
+    });
 }
 
 // maybe developed later...
@@ -80,10 +81,11 @@ chrome.tabs.onUpdated.addListener((tabId) => {
                 domain = new URL(currentUrl).hostname;
                 // console.log(prevDomain, domain, prevDomain != domain)
                 if (prevDomain != domain) {
-                    verifyIfAllowed(domain)
-                    sendTime(prevDomain).then(() => {
-                        startTime = new Date()
-                        isUpdateProcessing = false
+                    verifyIfAllowed(domain).then(() => {
+                        sendTime(prevDomain).then(() => {
+                            startTime = new Date()
+                            isUpdateProcessing = false
+                        })
                     })
                 } else {
                     isUpdateProcessing = false
@@ -99,18 +101,28 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
     console.log("Tab activated")
 
     if (activeTabId !== undefined) {
+        console.log("Sending watching time to db...")
         chrome.tabs.get(activeTabId, (tab) => {
             if (!chrome.runtime.lastError && tab) {
                 const currentUrl = tab.url!;
                 domain = new URL(currentUrl).hostname;
-                verifyIfAllowed(domain)
                 sendTime(domain).then(() => {
                     activeTabId = activeInfo.tabId;
-                    startTime = new Date();
+                    console.log("Checking if new domain is not restricted...")
+                    chrome.tabs.get(activeTabId, (tab) => {
+                        if (!chrome.runtime.lastError && tab) {
+                            const currentUrl = tab.url!;
+                            domain = new URL(currentUrl).hostname;
+                            verifyIfAllowed(domain).then(() => {
+                                startTime = new Date();
+                            })
+                        }
+                    });
                 })
             }
         });
     } else {
+        console.log("Starting timer - new session...")
         activeTabId = activeInfo.tabId;
         startTime = new Date();
     }
@@ -119,6 +131,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 
 chrome.webNavigation.onCompleted.addListener(function (details) {
     // Check if the URL matches the restricted site
+    console.log("verifying whether new domain is not restricted...")
     domain = new URL(details.url).hostname
     verifyIfAllowed(domain)
 });
@@ -133,7 +146,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             if (!chrome.runtime.lastError && tab) {
                 const currentUrl = tab.url!;
                 domain = new URL(currentUrl).hostname;
-                verifyIfAllowed(domain)
+                // verifyIfAllowed(domain)
             } else {
                 console.error("Problem with chrome.runtime")
             }

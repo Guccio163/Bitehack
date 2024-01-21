@@ -52,7 +52,7 @@ export default function AddictionsContext({ children }: PropsWithChildren) {
 
 
   useEffect(() => {
-
+    getAddictions();
     console.log("context fetched addcitions");
     console.log("context fetched streak")
   }, []);

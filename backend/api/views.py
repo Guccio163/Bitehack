@@ -30,6 +30,7 @@ class CustomAuthToken(ObtainAuthToken, generics.CreateAPIView):
             'username': user.username,
             'first_name': user.first_name,
             'last_name': user.last_name,
+            'date_joined': user.date_joined
         })
 
 
@@ -83,10 +84,11 @@ class SiteVisitsView(APIView):
         result = []
         
         for k in visits_names:
-            result.append({"name": k, "time": timedelta(0)})
+            result.append({"name": k, "time": timedelta(0), "count": 0})
             for visit in visits:
                 if visit["site_url"] != k: continue
                 result[-1]["time"] += visit["end_date"] - visit["start_date"]
+                result[-1]["count"] += 1
 
         return result
 

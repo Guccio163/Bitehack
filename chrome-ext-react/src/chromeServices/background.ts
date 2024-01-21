@@ -1,9 +1,10 @@
-import TOKEN from '../secret';
-import { DOMMessage, DOMMessageResponse } from '../types';
+import "regenerator-runtime/runtime.js";
+import { APIData } from '../types';
+import { sendData } from '../backendConnection'
 
-let activeTabId:number;
-let startTime:Date;
-let domain:string;
+let activeTabId: number;
+let startTime: Date;
+let domain: string;
 // const sendInfo = (message: DOMMessage, callback: (response: DOMMessageResponse) => void): void => {
 //     chrome.tabs && chrome.tabs.query({
 //         active: true,
@@ -15,22 +16,40 @@ let domain:string;
 //     });
 // }
 
-function getDomain(tabId:number) {
-    // Get the current URL of the tab
-    chrome.tabs.get(tabId, (tab) => {
+async function prepareDataToSend(tabId: number, start: Date) {
+    return chrome.tabs.get(tabId, async (tab) => {
         if (!chrome.runtime.lastError && tab) {
             const currentUrl = tab.url!;
             domain = new URL(currentUrl).hostname;
-            console.log(`Domain: ${domain}`);
+            const endTime = new Date();
+            // console.log(`Start: `, startTime);
+            // console.log(`End: `, endTime);
+            const data: APIData = {
+                site_url: domain,
+                start_date: start,
+                end_date: endTime
+            }
+            console.log("sendData: ", data)
+            await sendData(data)
+            // console.log(`Domain: ${domain}`);
             // Save the domain or perform other actions with it
         }
     });
 }
 
-function sendTimeSpent(startTime:Date) {
+async function sendTime(givenDomain: string) {
+    // console.log("sendTime: ", domain)
     const endTime = new Date();
-    console.log(`Start: `, startTime);
-    console.log(`End: `, endTime);
+    // console.log(`Start: `, startTime);
+    // console.log(`End: `, endTime);
+    const data: APIData = {
+        site_url: givenDomain,
+        start_date: startTime,
+        end_date: endTime
+    }
+    // console.log("sendData: ", data)
+    await sendData(data)
+    return
     // Store or process timeSpent as needed
 }
 
@@ -48,14 +67,40 @@ function sendTimeSpent(startTime:Date) {
 //     // })
 // })
 
+let isUpdateProcessing = false
+
 chrome.tabs.onUpdated.addListener((tabId) => {
-    console.log("Tab updated")
+    // console.log("Tab updated")
+
+
+    // HANDLE UNDEFINED!!!!
     const prevDomain = domain
-    getDomain(tabId)
-    if (prevDomain != domain) {
-        sendTimeSpent(startTime)
-        startTime = new Date()
+    // console.log(isUpdateProcessing)
+    if (!isUpdateProcessing) {
+        isUpdateProcessing = true
+        chrome.tabs.get(tabId, (tab) => {
+            if (!chrome.runtime.lastError && tab) {
+                const currentUrl = tab.url!;
+                domain = new URL(currentUrl).hostname;
+                // console.log(prevDomain, domain, prevDomain != domain)
+                if (prevDomain != domain) {
+                    sendTime(prevDomain).then(() => {
+                        startTime = new Date()
+                        isUpdateProcessing = false
+                    })
+                } else {
+                    isUpdateProcessing = false
+                }
+                // Save the domain or perform other actions with it
+            } else {
+                isUpdateProcessing = false
+            }
+        });
     }
+    // getDomain(tabId)
+    // if (prevDomain != domain) {
+    //     sendTime(prevDomain).then(() => startTime = new Date())
+    // }
     // sendInfo({ greeting: "tab-updated" }, (res) => {
     //     console.log(res)
     // })
@@ -63,27 +108,27 @@ chrome.tabs.onUpdated.addListener((tabId) => {
 })
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
-    console.log("Tab activated")
+    // console.log("Tab activated")
 
     if (activeTabId !== undefined) {
-        sendTimeSpent(startTime);
-        getDomain(activeTabId)
+        prepareDataToSend(activeTabId, startTime).then(() => {
+            // console.log("Overwriting startTime")
+            activeTabId = activeInfo.tabId;
+            startTime = new Date();
+        })
+    } else {
+        activeTabId = activeInfo.tabId;
+        startTime = new Date();
     }
-
-    activeTabId = activeInfo.tabId;
-    startTime = new Date();
-
-    // const prev = chrome.storage.local.get("data")
-    // console.log(prev, new Date())
-    // const data = {
-    //     session: TOKEN,
-    //     domain: window.location.hostname,
-    //     start: new Date()
-    // }
-    // chrome.storage.local.set(data)
-
-
-    // sendInfo({ greeting: "tab-activated" }, (res) => {
-    //     console.log(res)
-    // })
 })
+
+
+// get current tab data
+chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (tabs.length > 0) {
+        activeTabId = tabs[0].id!;
+        console.log('Current Tab ID:', activeTabId);
+    } else {
+        console.error('Unable to retrieve current tab ID');
+    }
+});

@@ -1,3 +1,5 @@
+// const path = require('path');
+
 module.exports = {
     webpack: {
         configure: (webpackConfig, { env, paths }) => {
@@ -15,7 +17,7 @@ module.exports = {
                 optimization: {
                     ...webpackConfig.optimization,
                     runtimeChunk: false,
-                }
+                },
             }
         },
     }

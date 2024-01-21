@@ -38,7 +38,7 @@
                 </p>
         </Panel>
         <div class="flex align-items-center justify-content-center m-3">
-            <Button @click="add" icon="pi pi-plus" severity="success" label="Dodaj ograniczenie" class="w-5" iconPos="right" aria-label="Dodaj ograniczenie"></Button>
+            <Button @click="add" icon="pi pi-plus" severity="success" label="Dodaj ograniczenie" class="w-5 mt-4" iconPos="right" aria-label="Dodaj ograniczenie"></Button>
         </div>
     </div>
 

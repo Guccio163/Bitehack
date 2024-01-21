@@ -73,19 +73,19 @@ export default function SettingsPage() {
       <List
         sx={{
           width: "100vw",
-          bgcolor: "background.paper",
+          // bgcolor: "background.transparent",
           alignSelf: "center",
         }}
         component="nav"
         aria-labelledby="nested-list-subheader"
         subheader={
-          <ListSubheader component="div" id="nested-list-subheader">
+          <ListSubheader component="div" style={{backgroundColor:"transparent", color:"white"}}>
             <h2>Blocked (evil) websites</h2>
           </ListSubheader>
         }
       >
         {addictionList
-          ? addictionList.map((item) => <ListItem addction={item} />)
+          ? addictionList.map((item) => <ListItem addiction={item} />)
           : null}
       </List>
     </div>

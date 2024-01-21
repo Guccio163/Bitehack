@@ -7,9 +7,9 @@ import React, {
 
 export default function UserDataContext({ children }: PropsWithChildren) {
   const [userID, setUserID] = useState("id");
-  const [username, setUsername] = useState("username");
-  const [firstName, setFirstName] = useState("jan");
-  const [lastName, setLastName] = useState("kowal");
+  const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   const getAddictions = () => {
     console.log("fetching addictions from db");

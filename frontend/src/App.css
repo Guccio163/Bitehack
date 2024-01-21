@@ -116,3 +116,7 @@
 .block-site-form-active {
   top: calc(50% - 200px);
 }
+
+.lightBackground{
+  background-color: "#BEE7B8";
+}

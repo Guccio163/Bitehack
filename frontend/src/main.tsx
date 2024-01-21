@@ -37,7 +37,7 @@ axios.defaults.headers.common["Authorization"] = `Token e31909e316ed96c159b39668
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <UserDataContext>
-      <AddictionsContext>
+      <AddictionsContext >
         <RouterProvider router={router} />
       </AddictionsContext>
     </UserDataContext>

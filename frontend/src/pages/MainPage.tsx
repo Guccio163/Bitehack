@@ -1,7 +1,6 @@
 import React, { useContext, useState } from "react";
 import AddictionPanel from "../components/AddictionPanel";
 import { collection, getDocs } from "firebase/firestore";
-import { firestore } from "../firebase";
 import { addictionsContext } from "../contexts/AddictionsContext";
 import { useNavigate } from "react-router-dom";
 import { List } from "@mui/material";
@@ -18,7 +17,7 @@ export default function MainPage() {
 
 
   return (
-    <>
+    <div className="lightBackground">
       <button
         style={{ position: "absolute", top: "2vh", left: "2vw" }}
         onClick={() => navi("/settings")}
@@ -52,6 +51,6 @@ export default function MainPage() {
           <AddictionPanel addiciton={item} />
         ))}
       </List>
-    </>
+    </div>
   );
 }

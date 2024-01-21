@@ -5,6 +5,8 @@ import React, {
   useState,
 } from "react";
 
+import axios from 'axios'
+
 export type Addiction = {
   name: string;
   timeSpent: number;
@@ -18,6 +20,7 @@ export default function AddictionsContext({ children }: PropsWithChildren) {
 
 
   useEffect(() => {
+
     console.log("context fetched addcitions");
   }, []);
 

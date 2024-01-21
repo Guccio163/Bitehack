@@ -15,6 +15,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import { addictionsContext } from "../contexts/AddictionsContext";
 import ListItem from "../components/ListItem";
 import BlockSiteForm from "../components/BlockSiteForm";
+import AddIcon from '@mui/icons-material/Add';
 
 export default function SettingsPage() {
   const navi = useNavigate();
@@ -36,10 +37,12 @@ export default function SettingsPage() {
       <BlockSiteForm userId="0" state={formState} onHideForm={hideBlockSiteForms}/>
       <div style={{width:"100%", height:"10%", display:"flex", alignItems:"center"}}>
         <div style={{width: "40px", height: "40px", padding:"0 0 0 20px"}}>
-          <Button className="block-site-button" onClick={addBlockedSite}>+</Button>
+          <button onClick={addBlockedSite} style={{padding:"0.3em 0.3em 0.1em 0.3em"}}>
+            <AddIcon style={{fontSize:"28", fontWeight:"bold"}}/>
+          </button>
         </div>
         <div style={{width: "10%", padding: "0 0 0 42%"}}>
-          <Button onClick={() => navi(-1)}>DDUPA</Button>
+          <button onClick={() => navi(-1)}>DDUPA</button>
         </div>
       </div>
       <List

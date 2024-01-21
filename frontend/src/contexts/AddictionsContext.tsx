@@ -29,7 +29,7 @@ export default function AddictionsContext({ children }: PropsWithChildren) {
       count: 20,
       daily_usage: 0,
     };
-    await axios.post(url, model).then((response) => {
+    await axios.get(url).then((response) => {
       const data = response.data;
       data.map((item)=>{
               setAddictionList(addictionList => [...addictionList ,{

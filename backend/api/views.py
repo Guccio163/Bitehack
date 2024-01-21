@@ -5,7 +5,7 @@ from .models import User, SiteVisit, BlockedSite
 from .serializers import RegisterSerializer, AuthTokenSerializer
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
-
+from urllib.parse import urlparse
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.views import APIView
@@ -152,17 +152,20 @@ class LimitationView(APIView):
                                           start_date__month=today_date.month,
                                           start_date__day=today_date.day).values()
 
-        blocked_sites_urls_counts = [{b.site_url: {"daily_usage": b.daily_usage, "time": timedelta(0), "count": 0}} 
-                                     for b in blocked_sites]
+        
+        blocked_sites_urls_counts = [[b.site_url, b.daily_usage] for b in blocked_sites]
+        
         return Response(self._aggregate_visits(visits, blocked_sites_urls_counts))
 
     def _aggregate_visits(self, visits, blocked_sites_urls_counts):
-        visits_aggregated = blocked_sites_urls_counts
-
-        for visit in visits:
-            key = visit['site_url']
-            visits_aggregated[key]["time"] += visit["end_date"] - visit["start_date"]
-            visits_aggregated[key]["count"] += 1
+        visits_aggregated = []
+        
+        for blocked_url, daily_usage in blocked_sites_urls_counts:
+            visits_aggregated.append({"name": blocked_url, "data": {"daily_usage": daily_usage, "time": timedelta(0), "count": 0}})
+            for visit in visits:
+                if visit["site_url"] != blocked_url: continue
+                visits_aggregated[-1]["data"]["time"] += visit["end_date"] - visit["start_date"]
+                visits_aggregated[-1]["data"]["count"] += 1
 
         return visits_aggregated
 

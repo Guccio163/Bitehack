@@ -15,50 +15,77 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import { addictionsContext } from "../contexts/AddictionsContext";
 import ListItem from "../components/ListItem";
 import BlockSiteForm from "../components/BlockSiteForm";
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 
 export default function SettingsPage() {
   const navi = useNavigate();
-  
+
   const [formState, setFormState] = useState(false);
   const { addictionList } = useContext(addictionsContext);
 
   const addBlockedSite = () => {
-    if (!formState)
-      setFormState(true);
-  }
+    if (!formState) setFormState(true);
+  };
 
   const hideBlockSiteForms = () => {
     setFormState(false);
-  }
+  };
 
   return (
-    <div style={{width:"100vw",height:"100vh"}}>
-      <BlockSiteForm userId="0" state={formState} onHideForm={hideBlockSiteForms}/>
-      <div style={{width:"100%", height:"10%", display:"flex", alignItems:"center"}}>
-        <div style={{width: "40px", height: "40px", padding:"0 0 0 20px"}}>
-          <button onClick={addBlockedSite} style={{padding:"0.3em 0.3em 0.1em 0.3em"}}>
-            <AddIcon style={{fontSize:"28", fontWeight:"bold"}}/>
+    <div style={{ width: "100vw", height: "100vh" }}>
+      <BlockSiteForm
+        userId="0"
+        state={formState}
+        onHideForm={hideBlockSiteForms}
+      />
+      <div
+        style={{
+          width: "100%",
+          height: "10%",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "20px",
+            left: "20px",
+          }}
+        >
+          <button onClick={() => navi(-1)}>
+            <HomeRoundedIcon />
           </button>
         </div>
-        <div style={{width: "10%", padding: "0 0 0 42%"}}>
-          <button onClick={() => navi(-1)}>DDUPA</button>
+        <div
+          style={{
+            position: "absolute",
+            top: "20px",
+            right: "20px",
+          }}
+        >
+          <button onClick={addBlockedSite}>
+            <AddIcon style={{ fontSize: "25", fontWeight: "bold" }} />
+          </button>
         </div>
       </div>
       <List
-        sx={{ width: "100vw", bgcolor: "background.paper", alignSelf:"center" }}
+        sx={{
+          width: "100vw",
+          bgcolor: "background.paper",
+          alignSelf: "center",
+        }}
         component="nav"
         aria-labelledby="nested-list-subheader"
         subheader={
           <ListSubheader component="div" id="nested-list-subheader">
-            Nested List Items
+            <h2>Blocked (evil) websites</h2>
           </ListSubheader>
         }
       >
         {addictionList
-          ? addictionList.map((item) => (
-              <ListItem addction={item}/>
-            ))
+          ? addictionList.map((item) => <ListItem addction={item} />)
           : null}
       </List>
     </div>

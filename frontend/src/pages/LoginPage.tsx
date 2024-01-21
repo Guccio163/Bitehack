@@ -25,25 +25,22 @@ export default function LoginPage() {
 
   return (
     <>
-      <div>LoginPage</div>
-      <label>
-        Username:
-        <input
+      <div style={{padding:"0 0 3rem 0", fontSize:"32px"}}>Login Page</div>
+      <div style={{display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gridRowGap:"1.5em", fontSize:"20px"}}>
+        <label style={{gridColumn:"1", gridRow:"1"}}>Username</label>
+        <input style={{gridColumn:"2", gridRow:"1", fontSize:"1.4em"}}
           type="text"
           value={loginUsername}
           onChange={(e) => setLoginUsername(e.target.value)}
         />
-      </label>
-      <br />
-      <label>
-        Password:
-        <input
+        <label style={{gridColumn:"1", gridRow:"2"}}>Password</label>
+        <input style={{gridColumn:"2", gridRow:"2", fontSize:"1.4em"}}
           type="password"
           value={loginPassword}
           onChange={(e) => setLoginPassword(e.target.value)}
         />
-      </label>
-      <button onClick={logToServer}>log</button>
+        <button style={{gridColumn:"2", gridRow:"3"}} onClick={logToServer}>Log in</button>
+      </div>
     </>
   );
 }

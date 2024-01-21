@@ -33,7 +33,7 @@ export default function AddictionsContext({ children }: PropsWithChildren) {
       const data = response.data;
       data.map((item)=>{
               setAddictionList(addictionList => [...addictionList ,{
-                siteUrl: item["site_url"],
+                siteUrl: item["name"],
                 time: item["time"],
                 count: item["count"],
                 dailyUsage: item["daily_usage"],

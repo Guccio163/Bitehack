@@ -145,7 +145,7 @@ function getProcents(time, daily_usage) {
     if (time == 0) {
         return 0
     }
-    return Math.round(time / (daily_usage * 60) * 100) / 100
+    return Math.round(time / (daily_usage * 60)*100 * 100) / 100
 }
 
 async function deleteLimit(pk) {

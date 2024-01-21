@@ -5,7 +5,7 @@ from .models import User, SiteVisit, BlockedSite
 from .serializers import RegisterSerializer, AuthTokenSerializer
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
-
+from urllib.parse import urlparse
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.views import APIView
@@ -164,7 +164,15 @@ class LimitationView(APIView):
             visits_aggregated[key]["time"] += visit["end_date"] - visit["start_date"]
             visits_aggregated[key]["count"] += 1
 
-        return visits_aggregated
+        result = []
+        for item in visits_aggregated:
+            url = list(item.keys())[0]
+            name = urlparse(url).hostname  # Extract hostname as "name"
+            data = list(item.values())[0]  # Extract data dictionary
+
+            transformed_item = {'name': name, 'data': data}
+            result.append(transformed_item)
+        return result
 
 # const testApi = async () => {
 #     let x = new Date()

@@ -48,17 +48,17 @@
     <div class="flex flex-column justify-content-center mt-5 mb-3 p-5" v-for="best in bests">
         <h1 class="box mx-auto text-3xl">{{ best.name }}</h1>
         <div class="flex justify-content-around">
-            <div class="flex flex-column align-items-center justify-content-center relative pt-4">
-                <Button @click="edit(best.second.name, best.second.time/120)" type="button" icon="pi pi-ban" severity="danger" rounded size="small" class="absolute top-0 right-0"></Button>
-                <span class="text-5xl text-orange-600">{{ Math.round(best.second.time / 60 * 100) / 100 }} min</span>
-                <span class="text-5xl text-orange-600">{{ best.second.name }}</span>
-            </div>
-            <div class="flex flex-column align-items-center justify-content-center relative pt-4">
+            <div class="flex flex-column align-items-center justify-content-center relative pt-4 px-3">
                 <Button @click="edit(best.first.name, best.first.time/120)" type="button" icon="pi pi-ban" severity="danger" rounded size="small" class="absolute top-0 right-0"></Button>
-                <span class="text-6xl text-red-600">{{ Math.round(best.first.time / 60 * 100) / 100 }} min</span>
-                <span class="text-6xl text-red-600">{{ best.first.name }}</span>
+                <span class="text-4xl text-red-600">{{ Math.round(best.first.time / 60 * 100) / 100 }} min</span>
+                <span class="text-4xl text-red-600">{{ best.first.name }}</span>
             </div>
-            <div class="flex flex-column align-items-center justify-content-center relative pt-4">
+            <div class="flex flex-column align-items-center justify-content-center relative pt-4 px-3">
+                <Button @click="edit(best.second.name, best.second.time/120)" type="button" icon="pi pi-ban" severity="danger" rounded size="small" class="absolute top-0 right-0"></Button>
+                <span class="text-4xl text-orange-600">{{ Math.round(best.second.time / 60 * 100) / 100 }} min</span>
+                <span class="text-4xl text-orange-600">{{ best.second.name }}</span>
+            </div>
+            <div class="flex flex-column align-items-center justify-content-center relative pt-4 px-3">
                 <Button @click="edit(best.third.name, best.third.time/120)" type="button" icon="pi pi-ban" severity="danger" rounded size="small" class="absolute top-0 right-0"></Button>
                 <span class="text-4xl text-yellow-700">{{ Math.round(best.third.time / 60 * 100) / 100 }} min</span>
                 <span class="text-4xl text-yellow-700">{{ best.third.name }}</span>
@@ -224,4 +224,19 @@ async function getExtraInfo() {
 }
 getExtraInfo()
 
+
+// async function x() {
+
+//     let x = new Date()
+//     x = new Date(x.getTime() - 6 * 60 * 1000);
+//     const url = `/sites/`  
+//     const model = {
+//       site_url: "www.betclic",
+//       start_date: x,
+//       end_date: new Date(x.getTime() + 0 * 60 * 1000)
+//     }
+    
+//     await axios.post(url, model)
+// }
+// x()
 </script>

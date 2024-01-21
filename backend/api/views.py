@@ -52,7 +52,7 @@ class SiteVisitsView(APIView):
         start_date = datetime.fromisoformat(start_param)
         end_date = datetime.fromisoformat(end_param)
 
-        visits = SiteVisit.objects.filter(user=user).values()
+        visits = SiteVisit.objects.filter(user=user, start_date__gte=start_date, end_date__lte=end_date).values()
         
         return Response(self._aggregate_visits(visits, start_date, end_date))
 
@@ -75,10 +75,11 @@ class SiteVisitsView(APIView):
     # Returns a dictionary where (key, value) = (site_name, aggregated_time_spent)
     # Considers only site visits made between start_date and end_date
     def _aggregate_visits(self, visits, start_date, end_date):        
+        print(visits)
         visits_names = {v["site_url"] for v in visits
                            if (start_date is None or v['start_date'] >= start_date) and (
                                        end_date is None or v["end_date"] <= end_date)}
-
+        print(visits_names)
         result = []
         
         for k in visits_names:
@@ -173,13 +174,13 @@ class LimitationView(APIView):
         return visits_aggregated
 
 # const testApi = async () => {
-#     let x = new Date()
-#     x = new Date(x.getTime() - 89 * 60 * 1000);
-#     const url = `/sites/`  
-#     const model = {
-#       site_url: "https://opera.com/",
-#       start_date: x,
-#       end_date: new Date()
+    # let x = new Date()
+    # x = new Date(x.getTime() - 89 * 60 * 1000);
+    # const url = `/sites/`  
+    # const model = {
+    #   site_url: "https://opera.com/",
+    #   start_date: x,
+    #   end_date: new Date()
 #     }
 #      await axios.post(url, model)
 #          .then(response => {

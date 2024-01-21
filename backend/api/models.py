@@ -86,7 +86,7 @@ class DateTimeWithoutTZField(DateTimeField):
 # Create your models here.
 class SiteVisit(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    site_url = models.URLField(max_length=255)
+    site_url = models.CharField(max_length=255)
     start_date = DateTimeWithoutTZField()
     end_date = DateTimeWithoutTZField()
 
@@ -100,6 +100,6 @@ class SiteVisit(models.Model):
 
 class BlockedSite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    site_url = models.URLField(max_length=255)
+    site_url = models.CharField(max_length=255)
     daily_usage = models.IntegerField(default=0)
     blocked_count = models.IntegerField(default=0)

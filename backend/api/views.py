@@ -175,15 +175,15 @@ class LimitationView(APIView):
 #       start_date: x,
 #       end_date: new Date()
 #     }
-#     // await axios.post(url, model)
-#     //     .then(response => {
-#     //       const data = response.data
-#     //       console.log(data);
+    #  await axios.post(url, model)
+    #      .then(response => {
+    #        const data = response.data
+    #        console.log(data);
 
-#     //     })
-#     //     .catch(error => {
-#     //         console.log(error);
-#     //     })
+    #      })
+    #      .catch(error => {
+    #          console.log(error);
+    #      })
 
 #     await axios
 #       .get(url, { params:

@@ -9,6 +9,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import UserDataContext from "./contexts/UserDataContext";
 import AddictionsContext from "./contexts/AddictionsContext";
 import axios from 'axios'
+import LoginPage from './pages/LoginPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
     path: "/profile",
     element: <ProfilePage />,
   },
+  {
+    path: "/login",
+    element: <LoginPage/>,
+  }
 ]);
 
 axios.defaults.baseURL = "http://127.0.0.1:8000/api";

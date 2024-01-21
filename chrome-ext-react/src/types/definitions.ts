@@ -1,18 +1,20 @@
 export type DOMMessage = {
-    greeting:string;
-}
-
-// Code 0 - tab start, Code 1 - tab update, code 2 - tab close, code 3 - hi / hello, code 4 - tab activated
-export type DOMMessageResponse = {
-    // title: string;
-    // headlines: string[];
-    domain:string;
-    time:string;
-    code:number;
+    message:string;
 }
 
 export type APIData = {
     site_url:string;
     start_date:Date;
     end_date:Date;
+}
+
+export type LimitationRecord = {
+    name:string;        // limited domain name
+    data:LimitationData;
+}
+
+export type LimitationData = {
+    count:number;       // how much user opened the website - for additional purposes in the future
+    daily_usage:number; // daily usage limit in MINUTES
+    time:number;        // current time on specific domain in SECONDS
 }

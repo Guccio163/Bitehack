@@ -1,41 +1,12 @@
 import "regenerator-runtime/runtime.js";
-import { APIData } from '../types';
-import { sendData } from '../backendConnection'
+import { APIData, LimitationRecord } from '../types';
+import { getLimitedDomains, sendData } from '../backendConnection'
+import { DOMMessage } from "../types";
 
 let activeTabId: number;
 let startTime: Date;
 let domain: string;
-// const sendInfo = (message: DOMMessage, callback: (response: DOMMessageResponse) => void): void => {
-//     chrome.tabs && chrome.tabs.query({
-//         active: true,
-//         currentWindow: true
-//     }, tabs => {
-//         chrome.tabs.sendMessage(
-//             tabs[0].id || 0,
-//             message, callback)
-//     });
-// }
-
-async function prepareDataToSend(tabId: number, start: Date) {
-    return chrome.tabs.get(tabId, async (tab) => {
-        if (!chrome.runtime.lastError && tab) {
-            const currentUrl = tab.url!;
-            domain = new URL(currentUrl).hostname;
-            const endTime = new Date();
-            // console.log(`Start: `, startTime);
-            // console.log(`End: `, endTime);
-            const data: APIData = {
-                site_url: domain,
-                start_date: start,
-                end_date: endTime
-            }
-            console.log("sendData: ", data)
-            await sendData(data)
-            // console.log(`Domain: ${domain}`);
-            // Save the domain or perform other actions with it
-        }
-    });
-}
+let limitedList: LimitationRecord[] = [];
 
 async function sendTime(givenDomain: string) {
     // console.log("sendTime: ", domain)
@@ -50,8 +21,35 @@ async function sendTime(givenDomain: string) {
     // console.log("sendData: ", data)
     await sendData(data)
     return
-    // Store or process timeSpent as needed
 }
+
+const verifyIfAllowed = (givenDomain: string) => {
+    // get restricted websites - Suboptimal, but it should work :)
+    getLimitedDomains().then((data: LimitationRecord[]) => {
+        limitedList = data
+        // Check if the hostname is in the restricted domains list
+        limitedList.forEach((el: LimitationRecord) => {
+            // console.log(el.name, givenDomain, el.name == givenDomain, el.data.daily_usage, el.data.time)
+            if (el.name == givenDomain && el.data.daily_usage <= el.data.time) {
+            // if (el.name == givenDomain && el.data.daily_usage * 60 <= el.data.time) {
+                // alert the user
+                chrome.tabs && chrome.tabs.query({
+                    active: true,
+                    currentWindow: true
+                }, tabs => {
+                    chrome.tabs.sendMessage(
+                        tabs[0].id || 0,
+                        { message: "alert" } as DOMMessage,
+                        (response: DOMMessage) => {
+                            console.log(response)
+                        });
+                });
+            }
+        });
+    })
+}
+
+// maybe developed later...
 
 // chrome.tabs.onRemoved.addListener(() => {
 //     console.log("Tab closed")
@@ -72,8 +70,6 @@ let isUpdateProcessing = false
 chrome.tabs.onUpdated.addListener((tabId) => {
     // console.log("Tab updated")
 
-
-    // HANDLE UNDEFINED!!!!
     const prevDomain = domain
     // console.log(isUpdateProcessing)
     if (!isUpdateProcessing) {
@@ -84,6 +80,7 @@ chrome.tabs.onUpdated.addListener((tabId) => {
                 domain = new URL(currentUrl).hostname;
                 // console.log(prevDomain, domain, prevDomain != domain)
                 if (prevDomain != domain) {
+                    verifyIfAllowed(domain)
                     sendTime(prevDomain).then(() => {
                         startTime = new Date()
                         isUpdateProcessing = false
@@ -91,31 +88,28 @@ chrome.tabs.onUpdated.addListener((tabId) => {
                 } else {
                     isUpdateProcessing = false
                 }
-                // Save the domain or perform other actions with it
             } else {
                 isUpdateProcessing = false
             }
         });
     }
-    // getDomain(tabId)
-    // if (prevDomain != domain) {
-    //     sendTime(prevDomain).then(() => startTime = new Date())
-    // }
-    // sendInfo({ greeting: "tab-updated" }, (res) => {
-    //     console.log(res)
-    // })
-
 })
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
-    // console.log("Tab activated")
+    console.log("Tab activated")
 
     if (activeTabId !== undefined) {
-        prepareDataToSend(activeTabId, startTime).then(() => {
-            // console.log("Overwriting startTime")
-            activeTabId = activeInfo.tabId;
-            startTime = new Date();
-        })
+        chrome.tabs.get(activeTabId, (tab) => {
+            if (!chrome.runtime.lastError && tab) {
+                const currentUrl = tab.url!;
+                domain = new URL(currentUrl).hostname;
+                verifyIfAllowed(domain)
+                sendTime(domain).then(() => {
+                    activeTabId = activeInfo.tabId;
+                    startTime = new Date();
+                })
+            }
+        });
     } else {
         activeTabId = activeInfo.tabId;
         startTime = new Date();
@@ -123,12 +117,30 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 })
 
 
+chrome.webNavigation.onCompleted.addListener(function (details) {
+    // Check if the URL matches the restricted site
+    domain = new URL(details.url).hostname
+    verifyIfAllowed(domain)
+});
+
+
 // get current tab data
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    startTime = new Date()
     if (tabs.length > 0) {
         activeTabId = tabs[0].id!;
-        console.log('Current Tab ID:', activeTabId);
+        chrome.tabs.get(activeTabId, (tab) => {
+            if (!chrome.runtime.lastError && tab) {
+                const currentUrl = tab.url!;
+                domain = new URL(currentUrl).hostname;
+                verifyIfAllowed(domain)
+            } else {
+                console.error("Problem with chrome.runtime")
+            }
+        });
+        // console.log('Current Tab ID:', activeTabId);
     } else {
         console.error('Unable to retrieve current tab ID');
     }
 });
+

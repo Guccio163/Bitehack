@@ -23,7 +23,7 @@ export default function ListItem({addction}:Props) {
         <ListItemIcon>
           <InstagramIcon sx={{ color: "grey" }} />
         </ListItemIcon>
-        <ListItemText primary={addction.name} sx={{ color: "grey" }} />
+        <ListItemText primary={addction.siteUrl} sx={{ color: "grey" }} />
         {open ? (
           <ExpandLess sx={{ color: "grey" }} />
         ) : (

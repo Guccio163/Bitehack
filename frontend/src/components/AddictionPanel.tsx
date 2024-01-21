@@ -12,7 +12,7 @@ function rgbToNumber(rgb: string) {
 }
 
 function numberToRgb(number: number) {
-    console.log(number)
+    // console.log(number)
   const result = number.toString(16);
   if (result.length == 1) {
     if (number < 16) {
@@ -110,7 +110,7 @@ export default function AddictionPanel({ addiciton }: Props) {
             fontWeight: "bold",
           }}
         >
-          {addiciton.name}
+          {addiciton.siteUrl}
         </div>
         <div
           style={{

@@ -201,19 +201,19 @@ async function getExtraInfo() {
     const url = '/sites/'
     const responseDay = await axios.get(url, { params: { start: yesterday, end: now}})
     let mostViewedSitesDay = responseDay.data
-    console.log(mostViewedSitesDay);
+    
     mostViewedSitesDay = mostViewedSitesDay.sort((a, b) => parseFloat(b.time) - parseFloat(a.time)).slice(0, 3)
     
     const responseWeek = await axios.get(url, { params: { start: lastWeek, end: now}})
     
     let mostViewedSitesWeek = responseWeek.data
-    console.log(mostViewedSitesWeek);
+    
     mostViewedSitesWeek = mostViewedSitesWeek.sort((a, b) => parseFloat(b.time) - parseFloat(a.time)).slice(0, 3)
 
     const responseMonth = await axios.get(url, { params: { start: lastMonth, end: now}})
     
     let mostViewedSitesMonth = responseMonth.data
-    console.log(mostViewedSitesMonth);
+    
     mostViewedSitesMonth = mostViewedSitesMonth.sort((a, b) => parseFloat(b.time) - parseFloat(a.time)).slice(0, 3)
 
     bests.value = [

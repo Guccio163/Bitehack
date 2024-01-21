@@ -51,8 +51,8 @@
 
 .water{
     --fillVar: 200%;
-    width:10vw;
-    height: 10vw;
+    width:10vh;
+    height: 10vh;
     background-color: #35b3e7;
     border-radius: 50%;
     position: relative;

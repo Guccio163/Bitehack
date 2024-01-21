@@ -93,6 +93,7 @@ export default function AddictionPanel({ addiciton }: Props) {
         display: "flex",
         flexDirection: "row",
         backgroundColor: "rgba(0, 0, 0, 0.2)",
+        height: "10vh",
         width: "35vw",
         alignItems: "center",
         placeContent: "center",
@@ -104,7 +105,7 @@ export default function AddictionPanel({ addiciton }: Props) {
       <ListItem disablePadding >
         <div
           style={{
-            marginRight: "15vw",
+            marginRight: "15vh",
             // backgroundColor: "green",
             fontWeight: "bold",
           }}

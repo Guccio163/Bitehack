@@ -33,7 +33,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div style={{width:"100vw",height:"100vh" ,backgroundColor:"white"}}>
+    <div style={{width:"100vw",height:"100vh"}}>
       <BlockSiteForm userId="0" state={formState} onHideForm={hideBlockSiteForms}/>
       <div style={{width:"100%", height:"10%", display:"flex", alignItems:"center"}}>
         <div style={{width: "40px", height: "40px", padding:"0 0 0 20px"}}>

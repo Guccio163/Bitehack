@@ -152,27 +152,22 @@ class LimitationView(APIView):
                                           start_date__month=today_date.month,
                                           start_date__day=today_date.day).values()
 
-        blocked_sites_urls_counts = [{b.site_url: {"daily_usage": b.daily_usage, "time": timedelta(0), "count": 0}} 
-                                     for b in blocked_sites]
+        
+        blocked_sites_urls_counts = [[b.site_url, b.daily_usage] for b in blocked_sites]
+        
         return Response(self._aggregate_visits(visits, blocked_sites_urls_counts))
 
     def _aggregate_visits(self, visits, blocked_sites_urls_counts):
-        visits_aggregated = blocked_sites_urls_counts
+        visits_aggregated = []
+        
+        for blocked_url, daily_usage in blocked_sites_urls_counts:
+            visits_aggregated.append({"name": blocked_url, "data": {"daily_usage": daily_usage, "time": timedelta(0), "count": 0}})
+            for visit in visits:
+                if visit["site_url"] != blocked_url: continue
+                visits_aggregated[-1]["data"]["time"] += visit["end_date"] - visit["start_date"]
+                visits_aggregated[-1]["data"]["count"] += 1
 
-        for visit in visits:
-            key = visit['site_url']
-            visits_aggregated[key]["time"] += visit["end_date"] - visit["start_date"]
-            visits_aggregated[key]["count"] += 1
-
-        result = []
-        for item in visits_aggregated:
-            url = list(item.keys())[0]
-            name = urlparse(url).hostname  # Extract hostname as "name"
-            data = list(item.values())[0]  # Extract data dictionary
-
-            transformed_item = {'name': name, 'data': data}
-            result.append(transformed_item)
-        return result
+        return visits_aggregated
 
 # const testApi = async () => {
 #     let x = new Date()

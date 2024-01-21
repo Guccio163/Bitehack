@@ -91,22 +91,32 @@ export default function AddictionPanel({ addiciton }: Props) {
     <div
       style={{
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
         backgroundColor: "rgba(0, 0, 0, 0.2)",
         height: "10vh",
-        width: "35vw",
-        alignItems: "center",
-        placeContent: "center",
-        alignSelf: "center",
+        width: "50vw",
         marginBottom: "10px",
         padding: "10px",
+        justifyContent: "center",
       }}
     >
-      <ListItem disablePadding >
+      <ListItem
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          height: "10vh",
+          width: "30vw",
+          padding: "10px",
+          justifyContent: "center",
+          alignContent:" center",
+          alignItems:"center",
+          alignSelf:"center",
+
+        }}
+      >
         <div
           style={{
-            marginRight: "15vh",
-            // backgroundColor: "green",
+            marginRight: "10vw",
             fontWeight: "bold",
           }}
         >
@@ -123,9 +133,8 @@ export default function AddictionPanel({ addiciton }: Props) {
         <div className="container">
           <div className="water" style={dynamicStyles} />
         </div>
-        <button onClick={increaseFilling}>dupa</button>
+        {/* <button onClick={increaseFilling}>dupa</button> */}
       </ListItem>
-      <Divider />
     </div>
   );
 }

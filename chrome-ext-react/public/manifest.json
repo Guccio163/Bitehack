@@ -6,7 +6,7 @@
     "48": "ihelp-high-resolution-logo-white.png",
     "128": "ihelp-high-resolution-logo-white.png"
   },
-  "version": "0.2.0",
+  "version": "1.0.0",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",

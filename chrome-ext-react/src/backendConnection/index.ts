@@ -2,8 +2,9 @@ import { APIData, LimitationData, LimitationRecord } from "../types"
 import TOKEN from '../secret'
 
 const apiUrl = "http://127.0.0.1:8000/api"
-const site = '/sites/'
+const sites = '/sites/'
 const limited = '/limitations/'
+
 
 const headers = {
     Authorization: TOKEN,
@@ -17,7 +18,7 @@ const sendData = async (data: APIData) => {
         headers: headers,
         body: JSON.stringify(data),
     };
-    fetch(apiUrl + site, requestOptions).then((res) => {
+    fetch(apiUrl + sites, requestOptions).then((res) => {
         if (!res.ok) {
             console.log("Error: ", res.status)
         }
@@ -57,6 +58,7 @@ const getLimitedDomains = async ():Promise<LimitationRecord[]> => {
         return []
     })
 }
+
 
 export {
     sendData,

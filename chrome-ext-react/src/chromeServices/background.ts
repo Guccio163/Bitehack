@@ -30,7 +30,7 @@ const verifyIfAllowed = async (givenDomain: string) => {
     // Check if the hostname is in the restricted domains list
     limitedList.forEach((el: LimitationRecord) => {
         // console.log(el.name, givenDomain, el.name == givenDomain, el.data.daily_usage, el.data.time);
-        if (el.name.includes(givenDomain) && el.data.daily_usage <= el.data.time) {
+        if (givenDomain.includes(el.name) && el.data.daily_usage <= el.data.time) {
             console.log("Showing alert and redirecting...")
             // if (el.name == givenDomain && el.data.daily_usage * 60 <= el.data.time) {
             // alert the user

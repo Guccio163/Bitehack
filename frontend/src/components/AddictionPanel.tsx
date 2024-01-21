@@ -110,7 +110,7 @@ export default function AddictionPanel({ addiciton }: Props) {
             fontWeight: "bold",
           }}
         >
-          {addiciton.name}
+          {addiciton.siteUrl}
         </div>
         <div
           style={{

@@ -103,3 +103,4 @@ class BlockedSite(models.Model):
     site_url = models.CharField(max_length=255)
     daily_usage = models.IntegerField(default=0)
     blocked_count = models.IntegerField(default=0)
+    date_joined = models.DateTimeField(auto_now_add=True)

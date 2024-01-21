@@ -13,7 +13,7 @@ from .serializers import SiteVisitSerializer, BlockedSiteSerializer
 
 from datetime import datetime, timedelta
 
-
+# tutaj można się logować, daje się username i hasło a zwraca token do późniejszej autentykacji
 class CustomAuthToken(ObtainAuthToken, generics.CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = AuthTokenSerializer
@@ -30,19 +30,24 @@ class CustomAuthToken(ObtainAuthToken, generics.CreateAPIView):
             'username': user.username,
             'first_name': user.first_name,
             'last_name': user.last_name,
+            'date_joined': user.date_joined
         })
 
 
+# służy do registrowania się - jak ktoś da imie nazwisko, username, email i dwa takie same hasła to się go stworzy - większość roboty robi serializer
 class RegisterView(CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
 
+# do tworzenia i pobierania historii odwiedzanych stron
 class SiteVisitsView(APIView):
     serializer_class = SiteVisitSerializer
 
     # permission_classes = (IsAuthenticated,)
+
+    #pobiera całą historie z podanego w paramsach okresu
     def get(self, request, format=None):
         _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
         user = Token.objects.get(key=key).user
@@ -52,46 +57,52 @@ class SiteVisitsView(APIView):
         start_date = datetime.fromisoformat(start_param)
         end_date = datetime.fromisoformat(end_param)
 
-        visits = SiteVisit.objects.filter(user=user).values()
-
+        visits = SiteVisit.objects.filter(user=user, start_date__gte=start_date, end_date__lte=end_date).values()
+        
         return Response(self._aggregate_visits(visits, start_date, end_date))
 
+    # tworzy nowy wpis do tej tabeli (dostaje to od wtyczki jak wykreje ona zmianę okna itp)
     def post(self, request, format=None):
         _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
         user = Token.objects.get(key=key).user
 
         data = request.data
         data['user'] = user.id
-        print("Z requesta: ", data)
+        
         serializer = SiteVisitSerializer(instance=SiteVisit(), data=data)
 
         if serializer.is_valid():
             serializer.save()
-            print("Do bazy danych ", serializer.data)
+        
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # Returns a dictionary where (key, value) = (site_name, aggregated_time_spent)
-    # Considers only site visits made between start_date and end_date
-    def _aggregate_visits(self, visits, start_date, end_date):
-        visits_filtered = [v for v in visits
+    # dla aplikacji i wtyczki potrzebne, pomocna do geta
+    def _aggregate_visits(self, visits, start_date, end_date):        
+        
+        visits_names = {v["site_url"] for v in visits
                            if (start_date is None or v['start_date'] >= start_date) and (
-                                       end_date is None or v["end_date"] <= end_date)]
+                                       end_date is None or v["end_date"] <= end_date)}
+        
+        result = []
+        
+        for k in visits_names:
+            result.append({"name": k, "time": timedelta(0), "count": 0})
+            for visit in visits:
+                if visit["site_url"] != k: continue
+                result[-1]["time"] += visit["end_date"] - visit["start_date"]
+                result[-1]["count"] += 1
 
-        visits_aggregated = {}
-        for visit in visits_filtered:
-            key = visit['site_url']
-            visits_aggregated[key] = visits_aggregated.get(key, 0) + visit["end_date"] - visit["start_date"]
-
-        return visits_aggregated
+        return result
 
 
+#zablokowane strony
 class BlockSiteView(APIView):
     serializer_class = BlockedSiteSerializer
 
     # permission_classes = (IsAuthenticated,)
-
+    #pobiera wszystkie
     def get(self, request, format=None):
         _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
         user = Token.objects.get(key=key).user
@@ -100,6 +111,7 @@ class BlockSiteView(APIView):
         serializer = BlockedSiteSerializer(blocked_sites, many=True)
         return Response(serializer.data)
 
+    #blokuje nową
     def post(self, request, format=None):
         _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
         user = Token.objects.get(key=key).user
@@ -113,9 +125,9 @@ class BlockSiteView(APIView):
             serializer.save()
             return Response(serializer.data)
 
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    #update np zmienia ograniczenie z 2h na strone na 90min na strone
     def put(self, request, pk, format=None):
         _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
         user = Token.objects.get(key=key).user
@@ -131,13 +143,14 @@ class BlockSiteView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    #usuwa blokade
     def delete(self, request, pk, format=None):
         blocked_site = BlockedSite.objects.get(pk=pk)
         blocked_site.delete()
 
         return Response("Blocked site deleted")
 
-
+#dodatkowe widoki, już nie związane szczególnie z jednym modelem - zwraca wszystkie blokade i to ile już dzisiaj ich wykorzystał
 class LimitationView(APIView):
     def get(self, request, format=None):
         _, key = self.request.META.get('HTTP_AUTHORIZATION').split(' ')
@@ -153,53 +166,18 @@ class LimitationView(APIView):
                                           start_date__day=today_date.day).values()
 
         
-        blocked_sites_urls_counts = [[b.site_url, b.daily_usage] for b in blocked_sites]
+        blocked_sites_urls_counts = [[b.site_url, b.daily_usage, b.date_joined, b.id] for b in blocked_sites]
         
         return Response(self._aggregate_visits(visits, blocked_sites_urls_counts))
 
     def _aggregate_visits(self, visits, blocked_sites_urls_counts):
         visits_aggregated = []
         
-        for blocked_url, daily_usage in blocked_sites_urls_counts:
-            visits_aggregated.append({"name": blocked_url, "data": {"daily_usage": daily_usage, "time": timedelta(0), "count": 0}})
+        for blocked_url, daily_usage, date_joined, id in blocked_sites_urls_counts:
+            visits_aggregated.append({"name": blocked_url, "data": {"daily_usage": daily_usage, "date_joined": date_joined, "time": timedelta(0), "count": 0, "pk": id}})
             for visit in visits:
                 if visit["site_url"] != blocked_url: continue
                 visits_aggregated[-1]["data"]["time"] += visit["end_date"] - visit["start_date"]
                 visits_aggregated[-1]["data"]["count"] += 1
 
         return visits_aggregated
-
-# const testApi = async () => {
-#     let x = new Date()
-#     x = new Date(x.getTime() - 89 * 60 * 1000);
-#     const url = `/sites/`  
-#     const model = {
-#       site_url: "https://opera.com/",
-#       start_date: x,
-#       end_date: new Date()
-#     }
-#      await axios.post(url, model)
-#          .then(response => {
-#            const data = response.data
-#            console.log(data);
-
-#          })
-#          .catch(error => {
-#              console.log(error);
-#          })
-
-#     await axios
-#       .get(url, { params:
-#       {
-#         end: new Date(),
-#         start: new Date(x.getTime() - 24 * 60 * 60 * 1000)
-#       }})
-#         .then(async response => {
-#             const data = response.data
-#             console.log("git")
-#             console.log(data)
-#         })
-#         .catch(error => {
-#             console.log(error);
-#         })
-#    }

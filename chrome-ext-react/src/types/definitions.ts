@@ -1,7 +1,9 @@
+// Type for messages sent between content.js and background.js
 export type DOMMessage = {
     message:string;
 }
 
+// Type for limitation record sent to backend
 export type APIData = {
     site_url:string;
     start_date:Date;

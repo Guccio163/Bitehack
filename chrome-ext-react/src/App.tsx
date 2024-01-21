@@ -7,7 +7,6 @@ function rgbToNumber(rgb: string) {
 }
 
 function numberToRgb(number: number) {
-  // console.log(number)
   const result = number.toString(16);
   if (result.length == 1) {
     if (number < 16) {
@@ -20,7 +19,7 @@ function numberToRgb(number: number) {
   }
 }
 
-function translateToRGBGreenToYellow(percentage: number) {
+function translateToRGBGreenToYellow(percentage: number): string {
   const normalized = (-1 * (percentage - 250)) / 80;
   const redRange = rgbToNumber("ff") - rgbToNumber("00");;
   const resultRed = numberToRgb(parseInt(`${redRange * normalized}`, 10));
@@ -31,7 +30,7 @@ function translateToRGBGreenToYellow(percentage: number) {
   return `#${resultRed}${resultGreen}00`;
 }
 
-function translateToRGBYellowRed(percentage: number) {
+function translateToRGBYellowRed(percentage: number): string {
   const normalized = (-1 * (percentage - 170)) / 80;
   const redRange = rgbToNumber("ff") - rgbToNumber("cc");
   const resultRed = numberToRgb(
@@ -44,7 +43,7 @@ function translateToRGBYellowRed(percentage: number) {
   return `#${resultRed}${resultGreen}00`;
 }
 
-function translatePercentageToRgb(percentage: number) {
+function translatePercentageToRgb(percentage: number): string {
   if (percentage > 170) {
     return translateToRGBGreenToYellow(percentage);
   } else {
@@ -54,7 +53,7 @@ function translatePercentageToRgb(percentage: number) {
 
 function App() {
   const [dataRecord, setDataRecord] = React.useState<LimitationRecord>({
-    name:"www.google.com",
+    name: "www.google.com",
     data: {
       count: 2,
       daily_usage: 90,
@@ -75,16 +74,15 @@ function App() {
         tabs[0].id!,
         { message: "get-domain" } as DOMMessage,
         (res: DOMMessage) => {
-          console.log(res)
           setDataRecord({
-            name:res.message,
+            name: res.message,
             data: {
               count: 3,
               daily_usage: 11,
               time: 360,
             }
           })
-          setFilling(250-((250-90)/100)*Math.round((dataRecord.data.time*100)/(dataRecord.data.daily_usage*60)))
+          setFilling(250 - ((250 - 90) / 100) * Math.round((dataRecord.data.time * 100) / (dataRecord.data.daily_usage * 60)))
           setWaterColour(translatePercentageToRgb(filling))
         });
     });
@@ -99,11 +97,11 @@ function App() {
     <div className="App">
       <div className='quick-display'>
         <h3>{dataRecord.name}</h3>
-        <span>count: {dataRecord.data.count}</span>
+        <span>visits: {dataRecord.data.count}</span>
         <div className="container">
           <div className="water" style={dynamicStyles} />
         </div>
-        <span>{Math.round((dataRecord.data.time*100)/(dataRecord.data.daily_usage*60))}%</span>
+        <span>{Math.round((dataRecord.data.time * 100) / (dataRecord.data.daily_usage * 60))}%</span>
       </div>
     </div>
   );

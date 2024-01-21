@@ -9,30 +9,24 @@ let domain: string;
 let limitedList: LimitationRecord[] = [];
 
 async function sendTime(givenDomain: string) {
-    // console.log("sendTime: ", domain)
+    // Function sends time stamps with given domain name to backend
     const endTime = new Date();
-    // console.log(`Start: `, startTime);
-    // console.log(`End: `, endTime);
     const data: APIData = {
         site_url: givenDomain,
         start_date: startTime,
         end_date: endTime
     }
-    console.log("sendData: ", data)
     await sendData(data)
     return
 }
 
 const verifyIfAllowed = async (givenDomain: string) => {
-    // get restricted websites - Suboptimal, but it should work :)
+    // Verifies whether given domain should be restricted
     const data = await getLimitedDomains();
     limitedList = data;
-    // Check if the hostname is in the restricted domains list
+    // Check if the domain matches the restriction requirements
     limitedList.forEach((el: LimitationRecord) => {
-        // console.log(el.name, givenDomain, el.name == givenDomain, el.data.daily_usage, el.data.time);
-        if (givenDomain.includes(el.name) && el.data.daily_usage <= el.data.time) {
-            console.log("Showing alert and redirecting...")
-            // if (el.name == givenDomain && el.data.daily_usage * 60 <= el.data.time) {
+        if (el.name == givenDomain && el.data.daily_usage * 60 <= el.data.time) {
             // alert the user
             chrome.tabs && chrome.tabs.query({
                 active: true,
@@ -42,7 +36,7 @@ const verifyIfAllowed = async (givenDomain: string) => {
                     tabs[0].id!,
                     { message: "alert" } as DOMMessage,
                     (res: DOMMessage) => {
-                        // console.log(res)
+                        // redirect user to google search page
                         chrome.tabs.update(activeTabId, { url: "https://www.google.com" });
                     });
             });
@@ -50,38 +44,23 @@ const verifyIfAllowed = async (givenDomain: string) => {
     });
 }
 
-// maybe developed later...
-
-// chrome.tabs.onRemoved.addListener(() => {
-//     console.log("Tab closed")
-//     // sendInfo({ greeting: "tab-closed" }, (res) => {
-//     //     console.log(res)
-//     // })
-// })
-
-// chrome.tabs.onCreated.addListener(() => {
-//     console.log("Tab created")
-//     // sendInfo({ greeting: "tab-created" }, (res) => {
-//     //     console.log(res)
-//     // })
-// })
-
+// Helpful boolean variable to prevent multiple invoking of onUpdated handler 
+// (still manages to not work as intended)
 let isUpdateProcessing = false
 
 chrome.tabs.onUpdated.addListener((tabId) => {
-    // console.log("Tab updated")
-
     const prevDomain = domain
-    // console.log(isUpdateProcessing)
     if (!isUpdateProcessing) {
         isUpdateProcessing = true
         chrome.tabs.get(tabId, (tab) => {
             if (!chrome.runtime.lastError && tab) {
                 const currentUrl = tab.url!;
                 domain = new URL(currentUrl).hostname;
-                // console.log(prevDomain, domain, prevDomain != domain)
+                // Check whether the domain name changed
                 if (prevDomain != domain) {
+                    // Verify if the user should be restricted
                     verifyIfAllowed(domain).then(() => {
+                        // update the database with the timestamp
                         sendTime(prevDomain).then(() => {
                             startTime = new Date()
                             isUpdateProcessing = false
@@ -98,22 +77,21 @@ chrome.tabs.onUpdated.addListener((tabId) => {
 })
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
-    console.log("Tab activated")
-
     if (activeTabId !== undefined) {
-        console.log("Sending watching time to db...")
+        // On new active tab save the timestamp
         chrome.tabs.get(activeTabId, (tab) => {
             if (!chrome.runtime.lastError && tab) {
                 const currentUrl = tab.url!;
                 domain = new URL(currentUrl).hostname;
                 sendTime(domain).then(() => {
+                    // Then check whether new domain should be restricted
                     activeTabId = activeInfo.tabId;
-                    console.log("Checking if new domain is not restricted...")
                     chrome.tabs.get(activeTabId, (tab) => {
                         if (!chrome.runtime.lastError && tab) {
                             const currentUrl = tab.url!;
                             domain = new URL(currentUrl).hostname;
                             verifyIfAllowed(domain).then(() => {
+                                // Start the timestamp if the user is allowed
                                 startTime = new Date();
                             })
                         }
@@ -122,7 +100,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
             }
         });
     } else {
-        console.log("Starting timer - new session...")
+        // Otherwise reset the timestamp
         activeTabId = activeInfo.tabId;
         startTime = new Date();
     }
@@ -130,14 +108,13 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 
 
 chrome.webNavigation.onCompleted.addListener(function (details) {
-    // Check if the URL matches the restricted site
-    console.log("verifying whether new domain is not restricted...")
+    // Check if the new URL matches the restricted site
     domain = new URL(details.url).hostname
     verifyIfAllowed(domain)
 });
 
 
-// get current tab data
+// Fetch current data - loaded on extension initialization
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     startTime = new Date()
     if (tabs.length > 0) {
@@ -151,7 +128,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
                 console.error("Problem with chrome.runtime")
             }
         });
-        // console.log('Current Tab ID:', activeTabId);
     } else {
         console.error('Unable to retrieve current tab ID');
     }

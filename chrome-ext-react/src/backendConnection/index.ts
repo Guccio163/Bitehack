@@ -12,7 +12,6 @@ const headers = {
 }
 
 const sendData = async (data: APIData) => {
-    // console.log(data);
     const requestOptions = {
         method: 'POST',
         headers: headers,
@@ -20,13 +19,11 @@ const sendData = async (data: APIData) => {
     };
     fetch(apiUrl + sites, requestOptions).then((res) => {
         if (!res.ok) {
-            console.log("Error: ", res.status)
+            console.error("Error: ", res.status)
         }
         return res.json()
-    }).then((data:any) => {
-        // console.log("data saved in database")
     }).catch(e => {
-        console.log(e)
+        console.error(e)
     })
 }
 
@@ -37,13 +34,11 @@ const getLimitedDomains = async ():Promise<LimitationRecord[]> => {
     };
     return fetch(apiUrl + limited, requestOptions).then((res) => {
         if (!res.ok) {
-            console.log("Error: ", res.status)
+            console.error("Error: ", res.status)
         }
-        // console.log(res)
         return res.json()
     }).then((data:any[]) => {
         return data.map(((el:any) => {
-            // console.log(el)
             return {
                 name:el.name,
                 data: {
@@ -54,7 +49,7 @@ const getLimitedDomains = async ():Promise<LimitationRecord[]> => {
             }
         })) as LimitationRecord[]
     }).catch(e => {
-        console.log(e)
+        console.error(e)
         return []
     })
 }

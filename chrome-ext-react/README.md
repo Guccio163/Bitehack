@@ -1,46 +1,22 @@
-# Getting Started with Create React App
+# Crave Control Chrome extension
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is an extension both to Chrome, and to Crave Control app. It communicates with back-end to send timestamps of pages that the user visits. Best used with core app for full experience of controlling crave for social medias :D.
 
-## Available Scripts
+## Technologies
 
-In the project directory, you can run:
+Created in React and parsed using Webpack with Craco config. Pure masterpiece created in just 24 hours straight.
 
-### `npm start`
+## How to use it?
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Probably it will never see its place in Chrome extension shop, but you can test it by doing the following:
+- In root directory (where the Readme lies patiently) install required packages using `npm install`.
+- Then build the project using `npm run build`.
+- After the build is finished open your Chrome browser and go to your extension list [chrome://extensions](chrome://extensions).
+- Enable the Developer mode (upper-right corner), then choose "Load unpacked" and select the newly created `build` directory.
+- This should result in newly added extension to Chrome browser
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+NOTE - You could pin the extension to have it always by your side :^)
 
-### `npm test`
+## Author
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Mainly me - Szymon Wójcik (it was an interesting task to do in 24 hours), but it was the group idea - just my responsibility...

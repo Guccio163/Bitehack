@@ -152,8 +152,8 @@ class LimitationView(APIView):
                                           start_date__month=today_date.month,
                                           start_date__day=today_date.day).values()
 
-        blocked_sites_urls_counts = {b.site_url: {"daily_usage": b.daily_usage, "time": timedelta(0), "count": 0} for b
-                                     in blocked_sites}
+        blocked_sites_urls_counts = [{b.site_url: {"daily_usage": b.daily_usage, "time": timedelta(0), "count": 0}} 
+                                     for b in blocked_sites]
         return Response(self._aggregate_visits(visits, blocked_sites_urls_counts))
 
     def _aggregate_visits(self, visits, blocked_sites_urls_counts):
@@ -175,15 +175,15 @@ class LimitationView(APIView):
 #       start_date: x,
 #       end_date: new Date()
 #     }
-    #  await axios.post(url, model)
-    #      .then(response => {
-    #        const data = response.data
-    #        console.log(data);
+#      await axios.post(url, model)
+#          .then(response => {
+#            const data = response.data
+#            console.log(data);
 
-    #      })
-    #      .catch(error => {
-    #          console.log(error);
-    #      })
+#          })
+#          .catch(error => {
+#              console.log(error);
+#          })
 
 #     await axios
 #       .get(url, { params:

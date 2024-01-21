@@ -9,20 +9,9 @@ const messagesFromReactAppListener = (
     sender: chrome.runtime.MessageSender,
     sendResponse: (response: DOMMessageResponse) => void) => {
 
-    // console.log(msg, sender, sendResponse)
 
-    // console.log(sender.tab ?
-    //     "from a content script:" + sender.tab.url :
-    //     "from the extension");
-    // if (msg.greeting === "hi")
-    //     sendResponse({ title: "bye", headlines: [], domain: "" });
-
-
-    // console.log('[content.js]. Message received', msg);
     const domain = window.location.hostname
     var res: DOMMessageResponse = {
-        // title: document.title,
-        // headlines,
         domain: domain,
         time: new Date().toISOString(),
         code: -1, // to be set

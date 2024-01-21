@@ -63,12 +63,12 @@ class SiteVisitsView(APIView):
 
         data = request.data
         data['user'] = user.id
-        print("Z requesta: ", data)
+        
         serializer = SiteVisitSerializer(instance=SiteVisit(), data=data)
 
         if serializer.is_valid():
             serializer.save()
-            print("Do bazy danych ", serializer.data)
+        
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -76,11 +76,11 @@ class SiteVisitsView(APIView):
     # Returns a dictionary where (key, value) = (site_name, aggregated_time_spent)
     # Considers only site visits made between start_date and end_date
     def _aggregate_visits(self, visits, start_date, end_date):        
-        print(visits)
+        
         visits_names = {v["site_url"] for v in visits
                            if (start_date is None or v['start_date'] >= start_date) and (
                                        end_date is None or v["end_date"] <= end_date)}
-        print(visits_names)
+        
         result = []
         
         for k in visits_names:
@@ -119,7 +119,6 @@ class BlockSiteView(APIView):
             serializer.save()
             return Response(serializer.data)
 
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):

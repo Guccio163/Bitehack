@@ -23,12 +23,6 @@ export default function AddictionsContext({ children }: PropsWithChildren) {
 
   const getAddictions = async () => {
     const url = "/limitations/";
-    // const model = {
-    //   site_url: "https://opera.com/",
-    //   time: 60,
-    //   count: 20,
-    //   daily_usage: 0,
-    // };
     await axios.get(url).then((response) => {
       const data = response.data;
       data.map((item)=>{
@@ -40,11 +34,6 @@ export default function AddictionsContext({ children }: PropsWithChildren) {
               }]);
 
       })
-      // setAddictionList({siteUrl: data["site_url"], time: data["time"], count: data["count"], dailyUsage: data["daily_usage"]})
-      // setUserID(data["site_url"]);
-      // setUsername(data["time"]);
-      // setFirstName(data["count"]);
-      // setLastName(data["daily_usage"]);
 
       console.log(data);
     });

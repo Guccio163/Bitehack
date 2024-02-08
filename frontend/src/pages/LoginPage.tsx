@@ -12,7 +12,6 @@ export default function LoginPage() {
 
   const { setFirstName, setLastName, setUsername, setUserID } =
     useContext(userDataContext);
-  // token, username, first_name, last_name
   const logToServer = async () => {
     const url = "/login/";
     const model = { username: loginUsername, password: loginPassword };

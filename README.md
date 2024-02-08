@@ -8,7 +8,7 @@ and trach your progress!
 ![alt text](419738146_757345646295225_8632033111443737254_n.png)
 You can check the time left when you're using the webpage without leaving it or opening extra tab thanks to our slick dynamic widget:
 ![alt text](415290445_1080016530090748_4120476345437551960_n.png)
-[text](<Nagranie z ekranu 2024-01-21 o 10.58.14.mov>)
+![text](<Nagranie z ekranu 2024-01-21 o 10.58.14.mov>)
 
 From technicalities it's worth mentioning that we (of course) made backend with **Django** and **MySQL** database.
 

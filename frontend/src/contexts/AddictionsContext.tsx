@@ -16,19 +16,19 @@ export type Addiction = {
 
 export default function AddictionsContext({ children }: PropsWithChildren) {
   const [addictionList, setAddictionList] = useState<Addiction[]>([
-    { siteUrl: "dupa", time: 40, count: 6, dailyUsage: 60 },
-    { siteUrl: "chuj", time: 69, count: 9, dailyUsage: 90 },
+    { siteUrl: "test1", time: 40, count: 6, dailyUsage: 60 },
+    { siteUrl: "test2", time: 69, count: 9, dailyUsage: 90 },
   ]);
   const [streak, setStreak] = useState(0);
 
   const getAddictions = async () => {
     const url = "/limitations/";
-    const model = {
-      site_url: "https://opera.com/",
-      time: 60,
-      count: 20,
-      daily_usage: 0,
-    };
+    // const model = {
+    //   site_url: "https://opera.com/",
+    //   time: 60,
+    //   count: 20,
+    //   daily_usage: 0,
+    // };
     await axios.get(url).then((response) => {
       const data = response.data;
       data.map((item)=>{

@@ -77,7 +77,7 @@ export default function AddictionPanel({ addiciton }: Props) {
     translatePercentageToRgb(filling)
   );
   const increaseFilling = () => {
-    setFilling((filling) => filling - 10);
+    setFilling((filling) => filling - 2);
     setWaterColour(translatePercentageToRgb(filling));
     console.log(waterColour);
   };
@@ -133,7 +133,7 @@ export default function AddictionPanel({ addiciton }: Props) {
         <div className="container">
           <div className="water" style={dynamicStyles} />
         </div>
-        {/* <button onClick={increaseFilling}>dupa</button> */}
+        <button onClick={increaseFilling} color="primary" style={{marginLeft:"30px"}}>increase</button>
       </ListItem>
     </div>
   );
